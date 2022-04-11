@@ -1,6 +1,9 @@
 package com.kreitek.editor;
 
 import com.kreitek.editor.commands.CommandFactory;
+import com.kreitek.editor.format.FormatFactory;
+import com.kreitek.editor.visitor.Visualizer;
+import com.kreitek.editor.visitor.ShowFormatVisitor;
 
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -17,7 +20,9 @@ public class ConsoleEditor implements Editor {
     public static final String TEXT_WHITE = "\u001B[37m";
 
     private final CommandFactory commandFactory = new CommandFactory();
-    private ArrayList<String> documentLines = new ArrayList<String>();
+    private final ArrayList<String> documentLines = new ArrayList<>();
+
+    Visualizer visualizer = Visualizer.getInstance();
 
     @Override
     public void run() {
@@ -41,14 +46,7 @@ public class ConsoleEditor implements Editor {
         if (textLines.size() > 0){
             setTextColor(TEXT_YELLOW);
             printLnToConsole("START DOCUMENT ==>");
-            for (int index = 0; index < textLines.size(); index++) {
-                StringBuilder stringBuilder = new StringBuilder();
-                stringBuilder.append("[");
-                stringBuilder.append(index);
-                stringBuilder.append("] ");
-                stringBuilder.append(textLines.get(index));
-                printLnToConsole(stringBuilder.toString());
-            }
+            printToConsole(visualizer.getFormat(textLines));
             printLnToConsole("<== END DOCUMENT");
             setTextColor(TEXT_RESET);
         }
@@ -64,6 +62,7 @@ public class ConsoleEditor implements Editor {
         printLnToConsole("To add new line -> a \"your text\"");
         printLnToConsole("To update line  -> u [line number] \"your text\"");
         printLnToConsole("To delete line  -> d [line number]");
+        printLnToConsole("To undo command -> undo");
     }
 
     private void printErrorToConsole(String message) {
@@ -83,5 +82,7 @@ public class ConsoleEditor implements Editor {
     private void printToConsole(String message) {
         System.out.print(message);
     }
+
+
 
 }
